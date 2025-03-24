@@ -4,18 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus Ticket Booking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+            --light-text: #f8f9fa;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 20px;
+        }
+        .search-bar input {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+        .booking-form, .bus-list, .bus-seats, .reviews {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .seat {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .seat.booked {
+            background-color: var(--accent-color);
+            color: white;
+            cursor: not-allowed;
+        }
+        .review-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Book a Bus Ticket</h1>
-    <input type="text" id="name" placeholder="Your Name">
-    <input type="email" id="email" placeholder="Your Email">
-    <input type="number" id="seat" placeholder="Seat Number">
-    <button onclick="bookTicket()">Book Ticket</button>
+    <header>
+        <h1><i class="fas fa-bus"></i> Bus Ticket Booking</h1>
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <i class="fas fa-search"></i>
+        </div>
+    </header>
+    <div class="container">
+        <div class="booking-form">
+            <h2>Book Your Ticket</h2>
+            div class="container">
+            <div class="booking-form">
+        <input type="text" id="name" placeholder="Your Name">
+        <input type="email" id="email" placeholder="Your Email">
+        <input type="number" id="seat" placeholder="Seat Number">
+        
+            </div>
+            <label for="currentLocation">Current Location:</label>
+            <input type="text" id="currentLocation" placeholder="Enter your location">
+            <label for="destination">Destination:</label>
+            <input type="text" id="destination" placeholder="Enter destination">
+            <button class="btn" onclick="showBusList()">Search Buses</button>
+        </div>
+        <div class="bus-list" id="busList" style="display:none;">
+            <h2>Available Buses</h2>
+            <ul id="busOptions"></ul>
+        </div>
+        <div class="bus-seats" id="seatSelection" style="display:none;">
+            <h2>Select Your Seat</h2>
+            <div class="seats" id="seats"></div>
+        </div>
+        <button onclick="bookTicket()">Book Ticket</button>
+        <div class="reviews">
+            <h2>Customer Reviews</h2>
+            <div id="reviewList"></div>
+        </div>
+    </div>
+    <script> 
+        function showBusList() {
+            const currentLocation = document.getElementById("currentLocation").value;
+            const destination = document.getElementById("destination").value;
+            
+            if (!currentLocation || !destination) {
+                alert("Please enter both current location and destination.");
+                return;
+            }
+            
+            document.getElementById("busList").style.display = "block";
+            const buses = [
+                { route: `${currentLocation} - ${destination}`, time: "10:00 AM" },
+                { route: `${currentLocation} - ${destination}`, time: "12:30 PM" },
+                { route: `${currentLocation} - ${destination}`, time: "3:15 PM" }
+            ];
     
-    <h2>Booked Tickets</h2>
-    <ul id="ticketList"></ul>
-
-    <script>
+            const busOptions = document.getElementById("busOptions");
+            busOptions.innerHTML = "";
+            
+            buses.forEach(bus => {
+                const li = document.createElement("li");
+                li.innerHTML = `<button class="btn" onclick="showSeats()">${bus.route} - ${bus.time}</button>`;
+                busOptions.appendChild(li);
+            });
+        }
+    
+        function showSeats() {
+            document.getElementById("seatSelection").style.display = "block";
+            const seatContainer = document.getElementById("seats");
+            seatContainer.innerHTML = "";
+            
+            for (let i = 1; i <= 20; i++) {
+                const seat = document.createElement("div");
+                seat.classList.add("seat");
+                seat.innerText = `Seat ${i}`;
+                seat.onclick = () => seat.classList.toggle("booked");
+                seatContainer.appendChild(seat);
+            }
+        }
+    
+        function fetchReviews() {
+            const reviews = [
+                { name: "John Doe", review: "Great service! Very comfortable journey." },
+                { name: "Jane Smith", review: "Affordable and on time, highly recommend!" },
+                { name: "Alice Brown", review: "Smooth booking process and excellent customer support." }
+            ];
+    
+            const reviewList = document.getElementById("reviewList");
+            reviewList.innerHTML = "";
+            
+            reviews.forEach(review => {
+                const div = document.createElement("div");
+                div.classList.add("review-item");
+                div.innerHTML = `<strong>${review.name}</strong><p>${review.review}</p>`;
+                reviewList.appendChild(div);
+            });
+        }
+    
+        fetchReviews();
         function bookTicket() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
@@ -35,12 +198,13 @@
                 const list = document.getElementById('ticketList');
                 list.innerHTML = "";
                 data.forEach(ticket => {
-                    list.innerHTML += `<li>${ticket.name} - Seat ${ticket.seatNumber}</li>`;
+                    list.innerHTML += <li>${ticket.name} - Seat ${ticket.seatNumber}</li>;
                 });
             });
         }
 
         fetchTickets();
     </script>
+    
 </body>
 </html>
