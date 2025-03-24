@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Ticket Booking</title>
+</head>
+<body>
+    <h1>Book a Bus Ticket</h1>
+    <input type="text" id="name" placeholder="Your Name">
+    <input type="email" id="email" placeholder="Your Email">
+    <input type="number" id="seat" placeholder="Seat Number">
+    <button onclick="bookTicket()">Book Ticket</button>
+    
+    <h2>Booked Tickets</h2>
+    <ul id="ticketList"></ul>
+
+    <script>
+        function bookTicket() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const seat = document.getElementById('seat').value;
+
+            fetch("http://your-ec2-ip:5000/book", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, seatNumber: seat })
+            }).then(res => res.json()).then(data => alert(data.message));
+        }
+
+        function fetchTickets() {
+            fetch("http://your-ec2-ip:5000/tickets")
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('ticketList');
+                list.innerHTML = "";
+                data.forEach(ticket => {
+                    list.innerHTML += `<li>${ticket.name} - Seat ${ticket.seatNumber}</li>`;
+                });
+            });
+        }
+
+        fetchTickets();
+    </script>
+</body>
+</html>
